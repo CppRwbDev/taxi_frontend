@@ -214,19 +214,21 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      <button 
-        onClick={handleSave}
-        disabled={loading}
-        className="w-full btn-primary py-4 mt-4 shadow-xl shadow-blue-500/20 active:scale-[0.98] transition-all"
+      {role === 'admin' && (
+        <button 
+          onClick={() => navigate('/')}
+          className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 py-4 rounded-3xl flex items-center justify-center gap-2 text-white font-black shadow-xl shadow-purple-500/20 active:scale-95 transition-all mt-4"
+        >
+          <ShieldCheck className="w-5 h-5" />
+          <span>Admin Panelga o'tish</span>
+        </button>
+      )}
+
+      <button
+        onClick={() => resetUser()}
+        className="text-[10px] font-black opacity-20 uppercase tracking-widest text-center w-full pb-8 hover:opacity-50 transition-opacity"
       >
-        {loading ? (
-          <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto" />
-        ) : (
-          <div className="flex items-center justify-center gap-2 font-black text-lg">
-            <Save className="w-5 h-5" />
-            <span>Ma'lumotlarni saqlash</span>
-          </div>
-        )}
+        Hisobdan chiqish
       </button>
     </div>
   );

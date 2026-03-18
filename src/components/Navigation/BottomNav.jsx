@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { ClipboardList, Car, User, PlusCircle, Settings } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 
@@ -20,9 +20,9 @@ const BottomNav = () => {
     ];
   } else if (role === 'admin') {
     navItems = [
-      { path: '/', label: 'Dashboard', icon: ClipboardList },
-      { path: '/admin/users', label: 'Foydalanuvchilar', icon: User },
-      { path: '/settings', label: 'Sozlamalar', icon: Settings },
+      { path: '/?tab=stats', label: 'Statistika', icon: TrendingUp },
+      { path: '/?tab=users', label: 'A\'zolar', icon: User },
+      { path: '/profile', label: 'Profil', icon: Settings },
     ];
   }
 
@@ -31,16 +31,16 @@ const BottomNav = () => {
       <div className="max-w-md mx-auto flex justify-between items-center h-16">
         {navItems.map((item) => {
           const Icon = item.icon;
+          const isActive = location.pathname + location.search === item.path || (item.path === '/' && location.pathname === '/' && !location.search);
+          
           return (
             <NavLink
               key={item.path}
               to={item.path}
-              className={({ isActive }) => 
-                `flex flex-col items-center gap-1 transition-all flex-1 ${isActive ? 'text-blue-500 scale-110' : 'text-gray-500 opacity-60'}`
-              }
+              className={`flex flex-col items-center gap-1 transition-all flex-1 ${isActive ? 'text-blue-500 scale-110' : 'text-gray-500 opacity-60'}`}
             >
               <Icon className="w-6 h-6" />
-              <span className="text-[10px] font-medium">{item.label}</span>
+              <span className="text-[10px] font-medium truncate w-full text-center">{item.label}</span>
             </NavLink>
           );
         })}
