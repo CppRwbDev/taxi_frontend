@@ -44,9 +44,6 @@ function App() {
       .then(data => {
         if (data.user) {
           setUser(data.user);
-          if (data.user.is_onboarded) {
-             setIsOnboarded(true);
-          }
         }
       })
       .catch(err => console.error("Validation error:", err));

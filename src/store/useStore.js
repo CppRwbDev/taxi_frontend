@@ -18,7 +18,15 @@ export const useStore = create(
       setRole: (role) => set({ role }),
       setIsOnboarded: (status) => set({ isOnboarded: status }),
       setInitData: (initData) => set({ initData }),
-      setUser: (user) => set({ user }),
+      setUser: (user) => {
+        set({ user });
+        if (user) {
+          if (user.role) set({ role: user.role });
+          if (user.theme) set({ theme: user.theme });
+          if (user.language) set({ language: user.language });
+          set({ isOnboarded: user.is_onboarded });
+        }
+      },
       
       // Async Actions
       completeOnboarding: async () => {
@@ -36,6 +44,29 @@ export const useStore = create(
           }
         } catch (error) {
           console.error('Onboarding error:', error);
+        }
+        return false;
+      },
+
+      // Sync User Profile (Save settings to backend)
+      syncUser: async (updates) => {
+        const { initData, setUser } = get();
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/users/me`, {
+            method: 'PATCH',
+            headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': `tma_${initData}`
+            },
+            body: JSON.stringify(updates),
+          });
+          if (response.ok) {
+            const user = await response.json();
+            setUser(user);
+            return true;
+          }
+        } catch (error) {
+          console.error('Sync error:', error);
         }
         return false;
       },

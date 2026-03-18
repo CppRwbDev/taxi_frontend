@@ -9,13 +9,24 @@ import { useNavigate } from 'react-router-dom';
 
 const Settings = () => {
   const { t, i18n } = useTranslation();
-  const { theme, language, role, setTheme, setLanguage, setRole, resetUser } = useStore();
+  const { theme, language, role, setTheme, setLanguage, setRole, resetUser, syncUser } = useStore();
   const navigate = useNavigate();
 
   const handleLanguage = (lang) => {
     i18n.changeLanguage(lang);
     setLanguage(lang);
     localStorage.setItem('language', lang);
+    syncUser({ language: lang });
+  };
+
+  const handleTheme = (t) => {
+    setTheme(t);
+    syncUser({ theme: t });
+  };
+
+  const handleRole = (r) => {
+    setRole(r);
+    syncUser({ role: r });
   };
 
   return (
@@ -58,7 +69,7 @@ const Settings = () => {
               <span>Qorong'u mavzu</span>
             </div>
             <button 
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              onClick={() => handleTheme(theme === 'dark' ? 'light' : 'dark')}
               className={`w-12 h-6 rounded-full relative transition-colors ${theme === 'dark' ? 'bg-blue-600' : 'bg-gray-400'}`}
             >
               <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${theme === 'dark' ? 'left-7' : 'left-1'}`} />
@@ -71,7 +82,7 @@ const Settings = () => {
           <h2 className="text-[var(--tg-hint-color)] text-sm font-medium uppercase mb-3 px-2">Rolingiz</h2>
           <div className="glass-card overflow-hidden !p-0">
             <button 
-              onClick={() => setRole('passenger')}
+              onClick={() => handleRole('passenger')}
               className={`w-full flex items-center justify-between p-4 border-b border-white/5 ${role === 'passenger' ? 'text-blue-500' : ''}`}
             >
               <div className="flex items-center gap-3">
@@ -80,7 +91,7 @@ const Settings = () => {
               </div>
             </button>
             <button 
-              onClick={() => setRole('driver')}
+              onClick={() => handleRole('driver')}
               className={`w-full flex items-center justify-between p-4 ${role === 'driver' ? 'text-blue-500' : ''}`}
             >
               <div className="flex items-center gap-3">
