@@ -16,8 +16,8 @@ app.get('/ping', (req, res) => {
 // React app build'langan fayllarini ulash
 app.use(express.static(join(__dirname, 'dist')));
 
-// Boshqa barcha so'rovlar React'ga (index.html) yo'naltiriladi
-app.get('/*', (req, res) => {
+// Boshqa har qanday noma'lum route'lar react routerga tushishi uchun
+app.use((req, res) => {
   res.sendFile(join(__dirname, 'dist', 'index.html'));
 });
 
