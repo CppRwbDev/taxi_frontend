@@ -1,9 +1,13 @@
-import { useEffect } from 'react'
-import { useStore } from './store/useStore'
+import React, { useEffect } from 'react'
 import WebApp from '@twa-dev/sdk'
+import { Routes, Route, Navigate } from 'react-router-dom'
+import { useStore } from './store/useStore'
+
+// Components
+import Onboarding from './components/Onboarding/Onboarding'
 
 function App() {
-  const theme = useStore((state) => state.theme)
+  const { theme, isOnboarded, role } = useStore()
   
   // Telegram WebApp init & theme qo'llash
   useEffect(() => {
@@ -21,29 +25,31 @@ function App() {
     }
   }, [theme])
 
+  // Agar onboarding qilinmagan bo'lsa darhol onboardingni ko'rsatamiz
+  if (!isOnboarded) {
+    return <Onboarding />
+  }
+
   return (
-    <div className="min-h-screen p-4 flex flex-col items-center justify-center">
-      <h1 className="text-3xl font-bold text-primary-500 mb-4">
-        Viloyatlararo Taksi
-      </h1>
-      <p className="text-center opacity-80 mb-6">
-        Telegram Mini App (Frontend) muvaffaqiyatli ishga tushdi!
-      </p>
-      
-      {/* Test qismi */}
-      <div className="bg-white dark:bg-dark-surface p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-dark-border max-w-sm w-full">
-         <h2 className="text-xl font-semibold mb-3">Tizim holati</h2>
-         <ul className="space-y-2 opacity-90">
-           <li className="flex justify-between">
-             <span>Platforma:</span> 
-             <span className="font-mono text-primary-500">{WebApp.platform || 'web'}</span>
-           </li>
-           <li className="flex justify-between">
-             <span>Rejim:</span> 
-             <span className="font-mono text-primary-500">{theme}</span>
-           </li>
-         </ul>
-      </div>
+    <div className="min-h-screen bg-[var(--tg-bg-color)] text-[var(--tg-text-color)]">
+      <Routes>
+        <Route path="/" element={
+          <div className="p-6 text-center">
+            <h1 className="text-2xl font-bold mb-4">Xush kelibsiz!</h1>
+            <p className="opacity-70">Sizning rolingiz: <span className="font-bold text-blue-500 uppercase">{role}</span></p>
+            <div className="mt-10 p-10 glass-card">
+              Keyingi sprintda bu erda asosiy funksiyalar paydo bo'ladi 🔥
+            </div>
+            <button 
+              onClick={() => useStore.getState().resetUser()}
+              className="mt-20 text-red-500 text-sm opacity-50 underline"
+            >
+              Reset (Test uchun)
+            </button>
+          </div>
+        } />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
     </div>
   )
 }

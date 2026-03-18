@@ -1,25 +1,64 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #3b82f6;
+  --color-secondary: #1e293b;
+  --color-accent: #f59e0b;
+}
+
+:root {
+  --tg-bg-color: #ffffff;
+  --tg-text-color: #000000;
+  --tg-hint-color: #707579;
+  --tg-link-color: #2481cc;
+  --tg-button-color: #2481cc;
+  --tg-button-text-color: #ffffff;
+  --tg-secondary-bg-color: #efeff3;
+}
+
+.dark {
+  --tg-bg-color: #1c1c1d;
+  --tg-text-color: #ffffff;
+  --tg-hint-color: #9b9b9b;
+  --tg-link-color: #64b5f6;
+  --tg-button-color: #2481cc;
+  --tg-button-text-color: #ffffff;
+  --tg-secondary-bg-color: #2c2c2e;
+}
 
 @layer base {
   body {
-    @apply bg-gray-50 text-gray-900 transition-colors duration-200 antialiased;
-  }
-
-  /* Dark mode */
-  html.dark body {
-    @apply bg-dark-bg text-gray-100;
+    @apply bg-[var(--tg-bg-color)] text-[var(--tg-text-color)] font-sans antialiased select-none overflow-x-hidden;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
-/* Custom animations */
-@keyframes pulse-ring {
-  0% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 20px rgba(14, 165, 233, 0); }
-  100% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); }
+@layer components {
+  .btn-primary {
+    @apply w-full py-4 px-6 bg-[var(--tg-button-color)] text-[var(--tg-button-text-color)] font-semibold rounded-2xl 
+           active:scale-95 transition-all duration-200 shadow-lg shadow-blue-500/20 disabled:opacity-50;
+  }
+  
+  .glass-card {
+    @apply bg-white/10 backdrop-blur-md border border-white/10 rounded-3xl p-6 shadow-xl;
+  }
+  
+  .dark .glass-card {
+    @apply bg-black/20 border-white/5;
+  }
+  
+  .input-field {
+    @apply w-full bg-[var(--tg-secondary-bg-color)] border-0 rounded-2xl px-5 py-4 focus:ring-2 focus:ring-blue-500 outline-none transition-all;
+  }
 }
 
-.animate-pulse-ring {
-  animation: pulse-ring 2s infinite;
+/* Custom Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
 }
