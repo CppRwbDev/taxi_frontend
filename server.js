@@ -17,7 +17,7 @@ app.get('/ping', (req, res) => {
 app.use(express.static(join(__dirname, 'dist')));
 
 // Boshqa barcha so'rovlar React'ga (index.html) yo'naltiriladi
-app.get('*', (req, res) => {
+app.get('/*', (req, res) => {
   res.sendFile(join(__dirname, 'dist', 'index.html'));
 });
 
