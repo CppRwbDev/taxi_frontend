@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { User, Phone, Car, Save, Wallet, ChevronRight, Briefcase } from 'lucide-react';
+import { User, Phone, Car, Save, Wallet, ChevronRight, Briefcase, MapPin } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 import { useNavigate } from 'react-router-dom';
+
+const VILOYATLAR = [
+  "Toshkent", "Andijon", "Buxoro", "Farg'ona", "Jizzax", 
+  "Xorazm", "Namangan", "Navoiy", "Qashqadaryo", 
+  "Qoraqalpog'iston", "Samarqand", "Sirdaryo", "Surxondaryo"
+];
 
 const ProfilePage = () => {
   const { user, initData, setUser, role } = useStore();
@@ -11,7 +17,8 @@ const ProfilePage = () => {
     phone_number: user?.phone_number || '',
     car_model: user?.car_model || '',
     car_color: user?.car_color || '',
-    car_number: user?.car_number || ''
+    car_number: user?.car_number || '',
+    working_cities: user?.working_cities || ''
   });
   
   const [loading, setLoading] = useState(false);
@@ -23,7 +30,8 @@ const ProfilePage = () => {
         phone_number: user.phone_number || '',
         car_model: user.car_model || '',
         car_color: user.car_color || '',
-        car_number: user.car_number || ''
+        car_number: user.car_number || '',
+        working_cities: user.working_cities || ''
       });
     }
   }, [user]);
@@ -33,6 +41,16 @@ const ProfilePage = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
+  };
+
+  const toggleCity = (city) => {
+    let cities = formData.working_cities ? formData.working_cities.split(',') : [];
+    if (cities.includes(city)) {
+      cities = cities.filter(c => c !== city);
+    } else {
+      cities.push(city);
+    }
+    setFormData({ ...formData, working_cities: cities.join(',') });
   };
 
   const handleSave = async () => {
@@ -164,6 +182,32 @@ const ProfilePage = () => {
                     className="w-full glass-card p-4 rounded-2xl text-base outline-none focus:ring-2 focus:ring-blue-500 transition-all border border-white/5 shadow-md font-black uppercase tracking-wider"
                   />
                 </div>
+              </div>
+
+              {/* WORKING CITIES */}
+              <div className="space-y-3 pt-6">
+                 <label className="text-xs font-black opacity-30 uppercase ml-2 tracking-widest flex items-center gap-2">
+                   <MapPin className="w-3 h-3 text-blue-500" /> Ishlash hududlaringiz
+                 </label>
+                 <div className="grid grid-cols-2 gap-2">
+                   {VILOYATLAR.map(city => {
+                     const isActive = formData.working_cities?.split(',').includes(city);
+                     return (
+                       <button
+                         key={city}
+                         onClick={() => toggleCity(city)}
+                         className={`p-3 rounded-2xl text-[10px] font-bold border transition-all ${
+                           isActive 
+                           ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-500/20' 
+                           : 'glass-card border-white/5 opacity-40'
+                         }`}
+                       >
+                         {city}
+                       </button>
+                     );
+                   })}
+                 </div>
+                 <p className="text-[10px] opacity-40 italic ml-2 mt-2">Tanlangan hududlar bo'yicha sizga botdan buyurtmalar yuboriladi</p>
               </div>
             </div>
           )}

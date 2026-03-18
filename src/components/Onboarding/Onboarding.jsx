@@ -4,14 +4,15 @@ import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/useStore';
 import { 
   Languages, Moon, Sun, User as UserIcon, 
-  Car, TrendingUp, CheckCircle2, ChevronRight 
+  Car, TrendingUp, CheckCircle2, ChevronRight, MapPin 
 } from 'lucide-react';
 
 const Onboarding = () => {
   const { t, i18n } = useTranslation();
-  const { setLanguage, setTheme, setRole, completeOnboarding, theme } = useStore();
+  const { setLanguage, setTheme, setRole, completeOnboarding, theme, role, user, setUser } = useStore();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [workingCities, setWorkingCities] = useState("");
 
   const nextStep = () => setStep(s => s + 1);
 
@@ -34,7 +35,8 @@ const Onboarding = () => {
 
   const finish = async () => {
     setLoading(true);
-    const success = await completeOnboarding();
+    // Onboardingni tugatishda working_cities ni ham yuboramiz
+    const success = await completeOnboarding({ working_cities: workingCities });
     setLoading(false);
     if (!success) {
       alert("Xatolik yuz berdi. Iltimos qaytadan urinib ko'ring.");
@@ -161,10 +163,57 @@ const Onboarding = () => {
           </motion.div>
         )}
 
-        {/* STEP 4: BENEFITS */}
-        {step === 4 && (
+        {/* STEP 4: WORKING CITIES (FOR DRIVERS) */}
+        {step === 4 && role === 'driver' && (
           <motion.div 
-            key="step4"
+            key="step4_driver"
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            className="flex-1 flex flex-col justify-center"
+          >
+            <div className="bg-blue-500/10 w-20 h-20 rounded-3xl flex items-center justify-center mb-6 mx-auto">
+               <MapPin className="text-blue-500 w-10 h-10" />
+            </div>
+            <h1 className="text-2xl font-black text-center mb-2 tracking-tight">Qayerlarda xizmat ko'rsatasiz?</h1>
+            <p className="text-center text-[var(--tg-hint-color)] text-xs mb-8">Sizga yaqin buyurtmalar haqida xabar beramiz</p>
+            
+            <div className="grid grid-cols-2 gap-2 mb-8 overflow-y-auto max-h-[40vh] p-2">
+              {["Toshkent", "Andijon", "Buxoro", "Farg'ona", "Jizzax", "Xorazm", "Namangan", "Navoiy", "Qashqadaryo", "Samarqand", "Sirdaryo", "Surxondaryo"].map(city => {
+                const isActive = workingCities.split(',').includes(city);
+                return (
+                  <button
+                    key={city}
+                    onClick={() => {
+                        let cities = workingCities ? workingCities.split(',') : [];
+                        if (cities.includes(city)) {
+                            cities = cities.filter(c => c !== city);
+                        } else {
+                            cities.push(city);
+                        }
+                        setWorkingCities(cities.join(','));
+                    }}
+                    className={`p-3 rounded-2xl text-[10px] font-bold border transition-all ${
+                      isActive 
+                      ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-500/20 scale-[1.05]' 
+                      : 'glass-card border-white/5 opacity-50'
+                    }`}
+                  >
+                    {city}
+                  </button>
+                );
+              })}
+            </div>
+            
+            <button onClick={nextStep} className="btn-primary">Davom etish</button>
+          </motion.div>
+        )}
+
+        {/* STEP 5: BENEFITS / FINISH */}
+        {step === (role === 'driver' ? 5 : 4) && (
+          <motion.div 
+            key="finish_step"
             variants={variants}
             initial="enter"
             animate="center"
@@ -202,7 +251,7 @@ const Onboarding = () => {
 
       {/* Progress Dots */}
       <div className="flex justify-center gap-2 mt-auto pb-4">
-        {[1, 2, 3, 4].map(i => (
+        {[1, 2, 3, 4, 5].filter(i => role === 'driver' || i !== 4).map(i => (
           <div 
             key={i}
             className={`h-1 rounded-full transition-all duration-300 ${step === i ? 'w-8 bg-blue-500' : 'w-2 bg-gray-600/30'}`}
