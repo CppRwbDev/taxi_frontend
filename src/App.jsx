@@ -7,8 +7,11 @@ function App() {
   
   // Telegram WebApp init & theme qo'llash
   useEffect(() => {
-    WebApp.ready()
-    WebApp.expand()
+    const twa = window.Telegram?.WebApp || WebApp;
+    if (twa?.ready) {
+      twa.ready();
+      twa.expand();
+    }
     
     // HTML root ga dark mode class qoshish
     if (theme === 'dark') {
