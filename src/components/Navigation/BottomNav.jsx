@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { ClipboardList, Car, User, PlusCircle, Settings, TrendingUp } from 'lucide-react';
+import { ClipboardList, Car, User, PlusCircle, Settings, TrendingUp, LayoutDashboard, Users } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 
 const BottomNav = () => {
@@ -21,9 +21,10 @@ const BottomNav = () => {
     ];
   } else if (role === 'admin') {
     navItems = [
-      { path: '/?tab=stats', label: 'Statistika', icon: TrendingUp },
-      { path: '/?tab=users', label: 'A\'zolar', icon: User },
-      { path: '/profile', label: 'Profil', icon: Settings },
+      { path: '/?tab=stats', label: 'Stats', icon: LayoutDashboard },
+      { path: '/?tab=users', label: 'A\'zolar', icon: Users },
+      { path: '/settings', label: 'Sozlamalar', icon: SettingsIcon },
+      { path: '/profile', label: 'Profil', icon: UserIcon },
     ];
   }
 

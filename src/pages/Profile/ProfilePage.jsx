@@ -214,19 +214,20 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {role === 'admin' && (
-        <button 
-          onClick={() => navigate('/')}
-          className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 py-4 rounded-3xl flex items-center justify-center gap-2 text-white font-black shadow-xl shadow-purple-500/20 active:scale-95 transition-all mt-4"
-        >
-          <ShieldCheck className="w-5 h-5" />
-          <span>Admin Panelga o'tish</span>
-        </button>
-      )}
+      <button 
+        onClick={handleSave}
+        disabled={loading}
+        className="w-full bg-blue-600 p-5 rounded-3xl flex items-center justify-center gap-2 text-white font-black shadow-xl shadow-blue-500/20 active:scale-95 transition-all mt-4 disabled:opacity-50"
+      >
+        <Save className="w-6 h-6" />
+        <span>{loading ? 'Saqlanmoqda...' : 'Profilni Saqlash'}</span>
+      </button>
 
       <button
-        onClick={() => resetUser()}
-        className="text-[10px] font-black opacity-20 uppercase tracking-widest text-center w-full pb-8 hover:opacity-50 transition-opacity"
+        onClick={() => {
+          if(window.confirm("Hisobdan chiqmoqchimisiz?")) resetUser();
+        }}
+        className="text-[10px] font-black opacity-20 uppercase tracking-widest text-center w-full pb-8 hover:opacity-50 transition-opacity mt-6"
       >
         Hisobdan chiqish
       </button>
