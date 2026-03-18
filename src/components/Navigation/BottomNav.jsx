@@ -23,8 +23,8 @@ const BottomNav = () => {
     navItems = [
       { path: '/?tab=stats', label: 'Stats', icon: LayoutDashboard },
       { path: '/?tab=users', label: 'A\'zolar', icon: Users },
-      { path: '/settings', label: 'Sozlamalar', icon: SettingsIcon },
-      { path: '/profile', label: 'Profil', icon: UserIcon },
+      { path: '/settings', label: 'Sozlamalar', icon: Settings },
+      { path: '/profile', label: 'Profil', icon: User },
     ];
   }
 
