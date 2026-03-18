@@ -29,13 +29,13 @@ export const useStore = create(
       },
       
       // Async Actions
-      completeOnboarding: async () => {
+      completeOnboarding: async (extraData = {}) => {
         const { language, theme, role, initData } = get();
         try {
           const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/onboarding?init_data=${encodeURIComponent(initData)}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ language, theme, role }),
+            body: JSON.stringify({ language, theme, role, ...extraData }),
           });
           if (response.ok) {
             const user = await response.json();
