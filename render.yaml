@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: taxi-frontend
+    env: node
+    region: frankfurt 
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: node server.js
+    envVars:
+      - key: VITE_API_URL
+        value: https://taxi-backend.onrender.com/api/v1
