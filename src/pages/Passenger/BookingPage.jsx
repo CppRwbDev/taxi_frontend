@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapPin, Users, Send } from 'lucide-react';
 import { useStore } from '../../store/useStore';
@@ -10,7 +11,8 @@ const VILOYATLAR = [
 ];
 
 const BookingPage = () => {
-  const { role } = useStore();
+  const { role, initData } = useStore();
+  const navigate = useNavigate();
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [passengers, setPassengers] = useState(1);
@@ -22,11 +24,38 @@ const BookingPage = () => {
       return;
     }
     setLoading(true);
-    // TODO: Connect to backend API
-    setTimeout(() => {
+    
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/orders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `tma_${initData}`
+        },
+        body: JSON.stringify({
+          order_type: "passenger",
+          from_location: from,
+          to_location: to,
+          from_city: "", // Can be extended to have city selections later
+          to_city: "",
+          passenger_count: passengers,
+          contact_phone: "" // Will be taken from user context on backend
+        })
+      });
+
+      if (response.ok) {
+        const orderData = await response.json();
+        navigate(`/order/${orderData.id}/offers`);
+      } else {
+        const errData = await response.json();
+        alert("Xatolik: " + (errData.detail || "Buyurtma berishda xatolik yuz berdi"));
+      }
+    } catch (error) {
+      console.error("Booking error:", error);
+      alert("Tizimda xatolik yuz berdi. Iltimos qaytadan urinib ko'ring.");
+    } finally {
       setLoading(false);
-      alert("Buyurtma qabul qilindi! Haydovchilar taklifini kuting.");
-    }, 1500);
+    }
   };
 
   return (

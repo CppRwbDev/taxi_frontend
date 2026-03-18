@@ -11,6 +11,11 @@ import BottomNav from './components/Navigation/BottomNav'
 
 // Pages
 import BookingPage from './pages/Passenger/BookingPage'
+import OffersPage from './pages/Passenger/OffersPage'
+import DriverOfferPage from './pages/Driver/DriverOfferPage'
+import MyOrdersPage from './pages/Common/MyOrdersPage'
+import MyOffersPage from './pages/Driver/MyOffersPage'
+import ProfilePage from './pages/Profile/ProfilePage'
 
 function App() {
   const { theme, isOnboarded, role, setInitData, setUser, setIsOnboarded } = useStore()
@@ -63,10 +68,12 @@ function App() {
     <div className="min-h-screen bg-[var(--tg-bg-color)] text-[var(--tg-text-color)] flex flex-col">
       <div className="flex-1 overflow-y-auto">
         <Routes>
-            <Route path="/" element={role === 'passenger' ? <BookingPage /> : <div className="p-6">Haydovchi ekrani (Tez kunda...)</div>} />
-            <Route path="/my-orders" element={<div className="p-6">Buyurtmalarim (Tez kunda...)</div>} />
-            <Route path="/my-offers" element={<div className="p-6">Mening takliflarim (Tez kunda...)</div>} />
-            <Route path="/profile" element={<div className="p-6">Profil (Tez kunda...)</div>} />
+            <Route path="/" element={role === 'passenger' ? <BookingPage /> : <MyOrdersPage />} />
+            <Route path="/order/:orderId/offers" element={<OffersPage />} />
+            <Route path="/driver/order/:orderId" element={<DriverOfferPage />} />
+            <Route path="/my-orders" element={<MyOrdersPage />} />
+            <Route path="/my-offers" element={<MyOffersPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<Navigate to="/" />} />
         </Routes>
