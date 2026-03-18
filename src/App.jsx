@@ -7,6 +7,27 @@ import { Settings as SettingsIcon } from 'lucide-react'
 // Components
 import Onboarding from './components/Onboarding/Onboarding'
 import Settings from './components/Settings/Settings'
+import BottomNav from './components/Navigation/BottomNav'
+
+// Placeholder Pages
+const HomePlaceholder = () => {
+    const { role } = useStore()
+    const navigate = useNavigate()
+    return (
+        <div className="p-6 text-center pb-24">
+            <div className="flex justify-end mb-4">
+               <button onClick={() => navigate('/settings')} className="p-2 opacity-60">
+                  <SettingsIcon className="w-6 h-6" />
+               </button>
+            </div>
+            <h1 className="text-2xl font-bold mb-4">Xush kelibsiz!</h1>
+            <p className="opacity-70">Sizning rolingiz: <span className="font-bold text-blue-500 uppercase">{role}</span></p>
+            <div className="mt-10 p-10 glass-card">
+              Keyingi qadam: {role === 'passenger' ? "Yo'nalish tanlash" : "Buyurtmalarni ko'rish"} funksiyasi 🔥
+            </div>
+        </div>
+    )
+}
 
 function App() {
   const { theme, isOnboarded, role, setInitData, setUser, setIsOnboarded } = useStore()
@@ -56,31 +77,19 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--tg-bg-color)] text-[var(--tg-text-color)]">
-      <Routes>
-        <Route path="/" element={
-          <div className="p-6 text-center">
-            <div className="flex justify-end mb-4">
-               <button onClick={() => navigate('/settings')} className="p-2 opacity-60">
-                  <SettingsIcon className="w-6 h-6" />
-               </button>
-            </div>
-            <h1 className="text-2xl font-bold mb-4">Xush kelibsiz!</h1>
-            <p className="opacity-70">Sizning rolingiz: <span className="font-bold text-blue-500 uppercase">{role}</span></p>
-            <div className="mt-10 p-10 glass-card">
-              Keyingi sprintda bu erda asosiy funksiyalar paydo bo'ladi 🔥
-            </div>
-            <button 
-              onClick={() => useStore.getState().resetUser()}
-              className="mt-20 text-red-500 text-sm opacity-50 underline"
-            >
-              Reset (Test uchun)
-            </button>
-          </div>
-        } />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
+    <div className="min-h-screen bg-[var(--tg-bg-color)] text-[var(--tg-text-color)] flex flex-col">
+      <div className="flex-1 overflow-y-auto">
+        <Routes>
+            <Route path="/" element={<HomePlaceholder />} />
+            <Route path="/my-orders" element={<div className="p-6">Buyurtmalarim (Tez kunda...)</div>} />
+            <Route path="/my-offers" element={<div className="p-6">Mening takliflarim (Tez kunda...)</div>} />
+            <Route path="/profile" element={<div className="p-6">Profil (Tez kunda...)</div>} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </div>
+      
+      <BottomNav />
     </div>
   )
 }
