@@ -1,10 +1,6 @@
-@import "tailwindcss";
-
-@theme {
-  --color-primary: #3b82f6;
-  --color-secondary: #1e293b;
-  --color-accent: #f59e0b;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --tg-bg-color: #ffffff;
@@ -28,27 +24,35 @@
 
 @layer base {
   body {
-    @apply bg-[var(--tg-bg-color)] text-[var(--tg-text-color)] font-sans antialiased select-none overflow-x-hidden;
+    background-color: var(--tg-bg-color);
+    color: var(--tg-text-color);
+    @apply font-sans antialiased select-none overflow-x-hidden;
     -webkit-tap-highlight-color: transparent;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply w-full py-4 px-6 bg-[var(--tg-button-color)] text-[var(--tg-button-text-color)] font-semibold rounded-2xl 
-           active:scale-95 transition-all duration-200 shadow-lg shadow-blue-500/20 disabled:opacity-50;
+    @apply w-full py-4 px-6 font-semibold rounded-2xl 
+           active:scale-95 transition-all duration-200 shadow-lg disabled:opacity-50;
+    background-color: var(--tg-button-color);
+    color: var(--tg-button-text-color);
   }
   
   .glass-card {
-    @apply bg-white/10 backdrop-blur-md border border-white/10 rounded-3xl p-6 shadow-xl;
+    @apply backdrop-blur-md border rounded-3xl p-6 shadow-xl;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.1);
   }
   
   .dark .glass-card {
-    @apply bg-black/20 border-white/5;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.05);
   }
   
   .input-field {
-    @apply w-full bg-[var(--tg-secondary-bg-color)] border-0 rounded-2xl px-5 py-4 focus:ring-2 focus:ring-blue-500 outline-none transition-all;
+    @apply w-full border-0 rounded-2xl px-5 py-4 focus:ring-2 focus:ring-blue-500 outline-none transition-all;
+    background-color: var(--tg-secondary-bg-color);
   }
 }
 
