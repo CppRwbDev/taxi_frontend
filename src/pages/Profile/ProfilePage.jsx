@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { User, Phone, Car, Save } from 'lucide-react';
+import { User, Phone, Car, Save, Wallet, ChevronRight, Briefcase } from 'lucide-react';
 import { useStore } from '../../store/useStore';
+import { useNavigate } from 'react-router-dom';
 
 const ProfilePage = () => {
-  const { user, initData, setUser } = useStore();
+  const { user, initData, setUser, role } = useStore();
+  const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
     phone_number: user?.phone_number || '',
@@ -13,6 +15,18 @@ const ProfilePage = () => {
   });
   
   const [loading, setLoading] = useState(false);
+
+  // Sync with store if user changes
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        phone_number: user.phone_number || '',
+        car_model: user.car_model || '',
+        car_color: user.car_color || '',
+        car_number: user.car_number || ''
+      });
+    }
+  }, [user]);
 
   const handleChange = (e) => {
     setFormData({
@@ -52,96 +66,122 @@ const ProfilePage = () => {
     <div className="p-6 space-y-6 pb-32">
       <header className="flex items-center gap-4">
         {user?.photo_url ? (
-          <img src={user.photo_url} alt="Profile" className="w-16 h-16 rounded-full object-cover border border-white/20" />
+          <img src={user.photo_url} alt="Profile" className="w-16 h-16 rounded-full object-cover border border-white/20 shadow-xl shadow-blue-500/10" />
         ) : (
           <div className="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center">
             <User className="w-8 h-8 text-blue-500" />
           </div>
         )}
         <div>
-          <h1 className="text-2xl font-bold">{user?.full_name || 'Foydalanuvchi'}</h1>
+          <h1 className="text-2xl font-black tracking-tight">{user?.full_name || 'Foydalanuvchi'}</h1>
           <div className="flex flex-col">
-             {user?.username && <span className="text-sm opacity-70">@{user.username}</span>}
-             <span className="text-sm opacity-70 capitalize mt-1">{user?.role === 'driver' ? 'Haydovchi' : 'Yo\'lovchi'}</span>
+             {user?.username && <span className="text-xs opacity-50 font-bold">@{user.username}</span>}
+             <div className="flex items-center gap-1 text-xs opacity-70 capitalize mt-1 text-blue-500 font-black">
+                <Briefcase className="w-3 h-3" />
+                {role === 'driver' ? 'Haydovchi' : 'Yo\'lovchi'}
+             </div>
           </div>
         </div>
       </header>
 
-      <div className="space-y-4">
-        <h2 className="font-bold text-lg">Asosiy ma'lumotlar</h2>
-        
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-bold opacity-70 flex items-center gap-2">
-            <Phone className="w-4 h-4" /> Telefon raqam
-          </label>
-          <input 
-            type="tel"
-            name="phone_number"
-            value={formData.phone_number}
-            onChange={handleChange}
-            placeholder="+998901234567"
-            className="w-full bg-black/5 dark:bg-white/5 border-none rounded-xl p-4 text-base outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-          />
-        </div>
+      {/* WALLET BUTTON (Only for Drivers) */}
+      {(role === 'driver' || role === 'investor') && (
+        <button 
+          onClick={() => navigate('/wallet')}
+          className="w-full bg-gradient-to-r from-blue-600 to-blue-500 p-5 rounded-3xl flex justify-between items-center text-white shadow-xl shadow-blue-500/20 active:scale-95 transition-all"
+        >
+          <div className="flex items-center gap-4">
+            <div className="p-2 bg-white/20 rounded-xl">
+               <Wallet className="w-6 h-6" />
+            </div>
+            <div className="text-left">
+               <div className="text-[10px] opacity-70 uppercase font-black">Mening balansim</div>
+               <div className="text-xl font-black">{(user?.balance || 0).toLocaleString()} <span>UZS</span></div>
+            </div>
+          </div>
+          <ChevronRight className="w-6 h-6 opacity-30" />
+        </button>
+      )}
 
-        {user?.role === 'driver' && (
-          <>
-            <h2 className="font-bold text-lg pt-4 border-t border-white/10 mt-4">Mashina ma'lumotlari</h2>
-            
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-bold opacity-70 flex items-center gap-2">
-                <Car className="w-4 h-4" /> Mashina rusumi
-              </label>
-              <input 
-                type="text"
-                name="car_model"
-                value={formData.car_model}
-                onChange={handleChange}
-                placeholder="Masalan: Chevrolet Cobalt"
-                className="w-full bg-black/5 dark:bg-white/5 border-none rounded-xl p-4 text-base outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-              />
+      <div className="space-y-6">
+        <label className="text-xs font-black opacity-30 uppercase tracking-widest ml-2">Shaxsiy ma'lumotlar</label>
+        
+        <div className="space-y-4">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2 ml-2 mb-1">
+              <Phone className="w-4 h-4 text-blue-500" />
+              <span className="text-xs font-bold opacity-60">Telefon raqam</span>
             </div>
-            
-            <div className="flex gap-4">
-              <div className="flex flex-col gap-2 flex-1">
-                <label className="text-sm font-bold opacity-70">Rang</label>
+            <input 
+              type="tel"
+              name="phone_number"
+              value={formData.phone_number}
+              onChange={handleChange}
+              placeholder="+998901234567"
+              className="w-full glass-card p-4 rounded-2xl text-base outline-none focus:ring-2 focus:ring-blue-500 transition-all border border-white/5 shadow-md"
+            />
+          </div>
+
+          {(role === 'driver' || role === 'investor') && (
+            <div className="space-y-6 pt-4 animate-slide-up">
+              <label className="text-xs font-black opacity-30 uppercase tracking-widest ml-2">Mashina ma'lumotlari</label>
+              
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2 ml-2 mb-1">
+                  <Car className="w-4 h-4 text-blue-500" />
+                  <span className="text-xs font-bold opacity-60">Mashina rusumi</span>
+                </div>
                 <input 
                   type="text"
-                  name="car_color"
-                  value={formData.car_color}
+                  name="car_model"
+                  value={formData.car_model}
                   onChange={handleChange}
-                  placeholder="Oq"
-                  className="w-full bg-black/5 dark:bg-white/5 border-none rounded-xl p-4 text-base outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                  placeholder="Masalan: Chevrolet Cobalt"
+                  className="w-full glass-card p-4 rounded-2xl text-base outline-none focus:ring-2 focus:ring-blue-500 transition-all border border-white/5 shadow-md"
                 />
               </div>
-              <div className="flex flex-col gap-2 flex-1">
-                <label className="text-sm font-bold opacity-70">Davlat raqami</label>
-                <input 
-                  type="text"
-                  name="car_number"
-                  value={formData.car_number}
-                  onChange={handleChange}
-                  placeholder="01 A 123 AA"
-                  className="w-full bg-black/5 dark:bg-white/5 border-none rounded-xl p-4 text-base outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                />
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs font-bold opacity-60 ml-2 mb-1">Rangi</span>
+                  <input 
+                    type="text"
+                    name="car_color"
+                    value={formData.car_color}
+                    onChange={handleChange}
+                    placeholder="Oq"
+                    className="w-full glass-card p-4 rounded-2xl text-base outline-none focus:ring-2 focus:ring-blue-500 transition-all border border-white/5 shadow-md"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs font-bold opacity-60 ml-2 mb-1">Davlat raqami</span>
+                  <input 
+                    type="text"
+                    name="car_number"
+                    value={formData.car_number}
+                    onChange={handleChange}
+                    placeholder="01 A 123 AA"
+                    className="w-full glass-card p-4 rounded-2xl text-base outline-none focus:ring-2 focus:ring-blue-500 transition-all border border-white/5 shadow-md font-black uppercase tracking-wider"
+                  />
+                </div>
               </div>
             </div>
-          </>
-        )}
+          )}
+        </div>
       </div>
 
       <button 
         onClick={handleSave}
         disabled={loading}
-        className="w-full btn-primary py-4 flex justify-center items-center gap-2 text-lg font-medium mt-8"
+        className="w-full btn-primary py-4 mt-4 shadow-xl shadow-blue-500/20 active:scale-[0.98] transition-all"
       >
         {loading ? (
-          <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto" />
         ) : (
-          <>
+          <div className="flex items-center justify-center gap-2 font-black text-lg">
             <Save className="w-5 h-5" />
-            Saqlash
-          </>
+            <span>Ma'lumotlarni saqlash</span>
+          </div>
         )}
       </button>
     </div>

@@ -80,14 +80,26 @@ const MyOrdersPage = () => {
                 </div>
               </div>
               
-              <div className="flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-blue-500" />
-                <span className="font-medium">{order.from_location} → {order.to_location}</span>
+              <div className="flex flex-col gap-1 pt-2">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-blue-500" />
+                  <span className="font-medium">{order.from_location} → {order.to_location}</span>
+                </div>
+                <div className="flex gap-4 pl-7 text-xs opacity-70">
+                   <div className="flex items-center gap-1">
+                     <Calendar className="w-3 h-3" />
+                     {order.departure_date === 'bugun' ? 'Bugun' : order.departure_date === 'ertaga' ? 'Ertaga' : order.departure_date}
+                   </div>
+                   <div className="flex items-center gap-1">
+                     <Clock className="w-3 h-3" />
+                     {order.departure_time === 'hozir' ? 'Hozir' : order.departure_time}
+                   </div>
+                </div>
               </div>
               
               <div className="flex justify-between items-center text-sm opacity-80 pt-2">
                 <span>{order.passenger_count} yo'lovchi</span>
-                <span>{new Date(order.created_at).toLocaleDateString('uz-UZ', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
+                <span className="text-[10px] opacity-40">{new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
               </div>
             </div>
           ))}

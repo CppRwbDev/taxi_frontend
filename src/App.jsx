@@ -17,6 +17,7 @@ import DriverOfferPage from './pages/Driver/DriverOfferPage'
 import MyOrdersPage from './pages/Common/MyOrdersPage'
 import MyOffersPage from './pages/Driver/MyOffersPage'
 import ProfilePage from './pages/Profile/ProfilePage'
+import WalletPage from './pages/Profile/WalletPage'
 import AdminDashboard from './pages/Admin/AdminDashboard'
 
 function App() {
@@ -80,6 +81,7 @@ function App() {
             <Route path="/my-orders" element={<MyOrdersPage />} />
             <Route path="/my-offers" element={<MyOffersPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/wallet" element={<WalletPage />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<Navigate to="/" />} />
         </Routes>

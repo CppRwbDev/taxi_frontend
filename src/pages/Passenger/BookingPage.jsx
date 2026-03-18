@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MapPin, Users, Send } from 'lucide-react';
+import { MapPin, Users, Send, Calendar, Clock } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 
 const VILOYATLAR = [
@@ -17,12 +17,31 @@ const BookingPage = () => {
   const [to, setTo] = useState('');
   const [passengers, setPassengers] = useState(1);
   const [loading, setLoading] = useState(false);
+  
+  // Sana va vaqt
+  const [dateType, setDateType] = useState('bugun'); // bugun, ertaga, boshqa
+  const [customDate, setCustomDate] = useState('');
+  const [timeType, setTimeType] = useState('hozir'); // hozir, boshqa
+  const [customTime, setCustomTime] = useState('');
 
   const handleBooking = async () => {
     if (!from || !to) {
       alert("Iltimos, yo'nalishni tanlang!");
       return;
     }
+    
+    // Sanani aniqlash
+    let finalDate = dateType;
+    if (dateType === 'boshqa' && customDate) {
+      finalDate = customDate;
+    }
+    
+    // Vaqtni aniqlash
+    let finalTime = timeType;
+    if (timeType === 'boshqa' && customTime) {
+      finalTime = customTime;
+    }
+
     setLoading(true);
     
     try {
@@ -36,10 +55,12 @@ const BookingPage = () => {
           order_type: "taxi",
           from_location: from,
           to_location: to,
-          from_city: "", // Can be extended to have city selections later
+          from_city: "",
           to_city: "",
           passenger_count: passengers,
-          contact_phone: "" // Will be taken from user context on backend
+          contact_phone: "",
+          departure_date: finalDate,
+          departure_time: finalTime
         })
       });
 
@@ -64,11 +85,10 @@ const BookingPage = () => {
         <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-blue-300 bg-clip-text text-transparent">
           Qayerga boramiz?
         </h1>
-        <p className="text-[var(--tg-hint-color)] text-sm">Yo'nalish va yo'lovchilar sonini belgilang</p>
+        <p className="text-[var(--tg-hint-color)] text-sm">Yo'nalish va vaqtni belgilang</p>
       </header>
 
       <section className="space-y-4">
-        {/* FROM */}
         <div className="glass-card flex flex-col gap-2">
           <label className="text-xs font-bold uppercase opacity-50 flex items-center gap-2">
             <MapPin className="w-3 h-3" /> Qayerdan
@@ -83,7 +103,6 @@ const BookingPage = () => {
           </select>
         </div>
 
-        {/* TO */}
         <div className="glass-card flex flex-col gap-2">
           <label className="text-xs font-bold uppercase opacity-50 flex items-center gap-2">
             <MapPin className="w-3 h-3 text-red-500" /> Qayerga
@@ -97,6 +116,59 @@ const BookingPage = () => {
             {VILOYATLAR.map(v => <option key={v} value={v} className="text-black">{v}</option>)}
           </select>
         </div>
+      </section>
+
+      {/* SANA VA VAQT */}
+      <section className="space-y-4">
+        <label className="text-sm font-bold opacity-70 flex items-center gap-2 ml-2">
+          <Calendar className="w-4 h-4" /> Jo'nash sanasi
+        </label>
+        <div className="flex gap-2">
+          {['bugun', 'ertaga', 'boshqa'].map(type => (
+            <button
+              key={type}
+              onClick={() => setDateType(type)}
+              className={`flex-1 py-3 rounded-xl text-sm font-medium transition-all ${
+                dateType === type ? 'bg-blue-500 text-white shadow-md' : 'glass-card opacity-60'
+              }`}
+            >
+              {type === 'bugun' ? 'Bugun' : type === 'ertaga' ? 'Ertaga' : 'Sana...'}
+            </button>
+          ))}
+        </div>
+        {dateType === 'boshqa' && (
+          <input 
+            type="date" 
+            className="w-full glass-card p-3 rounded-xl outline-none"
+            value={customDate}
+            onChange={e => setCustomDate(e.target.value)}
+          />
+        )}
+
+        <label className="text-sm font-bold opacity-70 flex items-center gap-2 ml-2 pt-2">
+          <Clock className="w-4 h-4" /> Vaqti
+        </label>
+        <div className="flex gap-2">
+          {['hozir', 'boshqa'].map(type => (
+            <button
+              key={type}
+              onClick={() => setTimeType(type)}
+              className={`flex-1 py-3 rounded-xl text-sm font-medium transition-all ${
+                timeType === type ? 'bg-blue-500 text-white shadow-md' : 'glass-card opacity-60'
+              }`}
+            >
+              {type === 'hozir' ? 'Hozir' : 'Vaqt tanlash'}
+            </button>
+          ))}
+        </div>
+        {timeType === 'boshqa' && (
+          <input 
+            type="time" 
+            className="w-full glass-card p-3 rounded-xl outline-none"
+            value={customTime}
+            onChange={e => setCustomTime(e.target.value)}
+          />
+        )}
       </section>
 
       <section className="space-y-4">

@@ -59,9 +59,19 @@ const DriverOrderList = () => {
                     <MapPin className="w-4 h-4 text-blue-500" />
                     <span>{order.from_location} → {order.to_location}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-xs opacity-60">
-                    <Users className="w-3 h-3" />
-                    <span>{order.passenger_count} yo'lovchi</span>
+                  <div className="flex flex-col gap-1 pl-6">
+                    <div className="flex items-center gap-2 text-xs opacity-70">
+                      <Calendar className="w-3 h-3 text-blue-400" />
+                      <span>{order.departure_date === 'bugun' ? 'Bugun' : order.departure_date === 'ertaga' ? 'Ertaga' : order.departure_date}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs opacity-70">
+                      <Clock className="w-3 h-3 text-blue-400" />
+                      <span>{order.departure_time === 'hozir' ? 'Hozir' : order.departure_time}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs opacity-70">
+                      <Users className="w-3 h-3 text-blue-400" />
+                      <span>{order.passenger_count} yo'lovchi</span>
+                    </div>
                   </div>
                 </div>
                 <div className="bg-blue-500/10 px-3 py-1 rounded-full text-[10px] font-bold text-blue-500 uppercase">
