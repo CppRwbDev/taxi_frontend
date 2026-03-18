@@ -8,4 +8,4 @@ services:
     startCommand: node server.js
     envVars:
       - key: VITE_API_URL
-        value: https://taxi-backend.onrender.com/api/v1
+        value: https://taxi-backend-3qxb.onrender.com/api/v1

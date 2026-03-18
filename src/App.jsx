@@ -11,6 +11,7 @@ import BottomNav from './components/Navigation/BottomNav'
 
 // Pages
 import BookingPage from './pages/Passenger/BookingPage'
+import DriverOrderList from './pages/Driver/DriverOrderList'
 import OffersPage from './pages/Passenger/OffersPage'
 import DriverOfferPage from './pages/Driver/DriverOfferPage'
 import MyOrdersPage from './pages/Common/MyOrdersPage'
@@ -65,7 +66,8 @@ function App() {
   const renderHome = () => {
     if (role === 'admin') return <AdminDashboard />;
     if (role === 'passenger') return <BookingPage />;
-    return <MyOrdersPage />; // Driver default to active orders
+    if (role === 'driver') return <DriverOrderList />;
+    return <MyOrdersPage />;
   };
 
   return (
