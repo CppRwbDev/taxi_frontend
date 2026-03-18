@@ -33,7 +33,7 @@ const BookingPage = () => {
           'Authorization': `tma_${initData}`
         },
         body: JSON.stringify({
-          order_type: "passenger",
+          order_type: "taxi",
           from_location: from,
           to_location: to,
           from_city: "", // Can be extended to have city selections later

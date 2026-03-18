@@ -16,6 +16,7 @@ import DriverOfferPage from './pages/Driver/DriverOfferPage'
 import MyOrdersPage from './pages/Common/MyOrdersPage'
 import MyOffersPage from './pages/Driver/MyOffersPage'
 import ProfilePage from './pages/Profile/ProfilePage'
+import AdminDashboard from './pages/Admin/AdminDashboard'
 
 function App() {
   const { theme, isOnboarded, role, setInitData, setUser, setIsOnboarded } = useStore()
@@ -64,11 +65,17 @@ function App() {
     return <Onboarding />
   }
 
+  const renderHome = () => {
+    if (role === 'admin') return <AdminDashboard />;
+    if (role === 'passenger') return <BookingPage />;
+    return <MyOrdersPage />; // Driver default to active orders
+  };
+
   return (
     <div className="min-h-screen bg-[var(--tg-bg-color)] text-[var(--tg-text-color)] flex flex-col">
       <div className="flex-1 overflow-y-auto">
         <Routes>
-            <Route path="/" element={role === 'passenger' ? <BookingPage /> : <MyOrdersPage />} />
+            <Route path="/" element={renderHome()} />
             <Route path="/order/:orderId/offers" element={<OffersPage />} />
             <Route path="/driver/order/:orderId" element={<DriverOfferPage />} />
             <Route path="/my-orders" element={<MyOrdersPage />} />
