@@ -1,10 +1,11 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { ClipboardList, Car, User, PlusCircle, Settings } from 'lucide-react';
+import { ClipboardList, Car, User, PlusCircle, Settings, TrendingUp } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 
 const BottomNav = () => {
   const { role } = useStore();
+  const location = useLocation();
 
   let navItems = [
     { path: '/', label: 'Buyurtma', icon: PlusCircle },
