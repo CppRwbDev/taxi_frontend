@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Phone, Car, Save, Wallet, ChevronRight, Briefcase, MapPin } from 'lucide-react';
+import { User, Phone, Car, Save, Wallet, ChevronRight, Briefcase, MapPin, ShieldCheck } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 import { useNavigate } from 'react-router-dom';
 
