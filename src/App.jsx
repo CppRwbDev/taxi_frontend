@@ -22,7 +22,7 @@ function App() {
   const { theme, isOnboarded, role, setInitData, setUser, setIsOnboarded } = useStore()
   const navigate = useNavigate()
   
-  // Telegram WebApp init & theme qo'llash
+  // Auth Validation - Faqat bir marta
   useEffect(() => {
     const twa = window.Telegram?.WebApp || WebApp;
     if (twa?.ready) {
@@ -30,11 +30,9 @@ function App() {
       twa.expand();
     }
     
-    // Auth Validation
     if (twa?.initData) {
       setInitData(twa.initData);
       
-      // API orqali tekshirish
       fetch(`${import.meta.env.VITE_API_URL}/auth/validate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -48,8 +46,10 @@ function App() {
       })
       .catch(err => console.error("Validation error:", err));
     }
-    
-    // HTML root ga dark mode class qoshish
+  }, []) // Faqat mountda
+
+  // Theme qo'llash
+  useEffect(() => {
     if (theme === 'dark') {
       document.documentElement.classList.add('dark')
     } else {
