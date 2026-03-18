@@ -1,13 +1,16 @@
 import React, { useEffect } from 'react'
 import WebApp from '@twa-dev/sdk'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { useStore } from './store/useStore'
+import { Settings as SettingsIcon } from 'lucide-react'
 
 // Components
 import Onboarding from './components/Onboarding/Onboarding'
+import Settings from './components/Settings/Settings'
 
 function App() {
   const { theme, isOnboarded, role, setInitData, setUser, setIsOnboarded } = useStore()
+  const navigate = useNavigate()
   
   // Telegram WebApp init & theme qo'llash
   useEffect(() => {
@@ -57,6 +60,11 @@ function App() {
       <Routes>
         <Route path="/" element={
           <div className="p-6 text-center">
+            <div className="flex justify-end mb-4">
+               <button onClick={() => navigate('/settings')} className="p-2 opacity-60">
+                  <SettingsIcon className="w-6 h-6" />
+               </button>
+            </div>
             <h1 className="text-2xl font-bold mb-4">Xush kelibsiz!</h1>
             <p className="opacity-70">Sizning rolingiz: <span className="font-bold text-blue-500 uppercase">{role}</span></p>
             <div className="mt-10 p-10 glass-card">
@@ -70,6 +78,7 @@ function App() {
             </button>
           </div>
         } />
+        <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </div>
