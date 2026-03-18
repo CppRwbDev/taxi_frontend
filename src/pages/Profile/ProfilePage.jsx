@@ -51,12 +51,19 @@ const ProfilePage = () => {
   return (
     <div className="p-6 space-y-6 pb-32">
       <header className="flex items-center gap-4">
-        <div className="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center">
-          <User className="w-8 h-8 text-blue-500" />
-        </div>
+        {user?.photo_url ? (
+          <img src={user.photo_url} alt="Profile" className="w-16 h-16 rounded-full object-cover border border-white/20" />
+        ) : (
+          <div className="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center">
+            <User className="w-8 h-8 text-blue-500" />
+          </div>
+        )}
         <div>
           <h1 className="text-2xl font-bold">{user?.full_name || 'Foydalanuvchi'}</h1>
-          <p className="text-sm opacity-70 capitalize">{user?.role === 'driver' ? 'Haydovchi' : 'Yo\'lovchi'}</p>
+          <div className="flex flex-col">
+             {user?.username && <span className="text-sm opacity-70">@{user.username}</span>}
+             <span className="text-sm opacity-70 capitalize mt-1">{user?.role === 'driver' ? 'Haydovchi' : 'Yo\'lovchi'}</span>
+          </div>
         </div>
       </header>
 
