@@ -7,7 +7,7 @@ import { useStore } from './store/useStore'
 import Onboarding from './components/Onboarding/Onboarding'
 
 function App() {
-  const { theme, isOnboarded, role } = useStore()
+  const { theme, isOnboarded, role, setInitData, setUser, setIsOnboarded } = useStore()
   
   // Telegram WebApp init & theme qo'llash
   useEffect(() => {
@@ -15,6 +15,28 @@ function App() {
     if (twa?.ready) {
       twa.ready();
       twa.expand();
+    }
+    
+    // Auth Validation
+    if (twa?.initData) {
+      setInitData(twa.initData);
+      
+      // API orqali tekshirish
+      fetch(`${import.meta.env.VITE_API_URL}/auth/validate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ init_data: twa.initData })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.user) {
+          setUser(data.user);
+          if (data.user.is_onboarded) {
+             setIsOnboarded(true);
+          }
+        }
+      })
+      .catch(err => console.error("Validation error:", err));
     }
     
     // HTML root ga dark mode class qoshish

@@ -9,8 +9,9 @@ import {
 
 const Onboarding = () => {
   const { t, i18n } = useTranslation();
-  const { setLanguage, setTheme, setRole, setIsOnboarded, theme } = useStore();
+  const { setLanguage, setTheme, setRole, completeOnboarding, theme } = useStore();
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   const nextStep = () => setStep(s => s + 1);
 
@@ -31,8 +32,13 @@ const Onboarding = () => {
     nextStep();
   };
 
-  const finish = () => {
-    setIsOnboarded(true);
+  const finish = async () => {
+    setLoading(true);
+    const success = await completeOnboarding();
+    setLoading(false);
+    if (!success) {
+      alert("Xatolik yuz berdi. Iltimos qaytadan urinib ko'ring.");
+    }
   };
 
   const variants = {
@@ -184,8 +190,10 @@ const Onboarding = () => {
               </div>
             </div>
 
-            <button onClick={finish} className="btn-primary">
-              {t('next')}
+            <button onClick={finish} disabled={loading} className="btn-primary flex items-center justify-center gap-2">
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : t('next')}
             </button>
           </motion.div>
         )}
