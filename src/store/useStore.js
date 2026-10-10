@@ -31,6 +31,11 @@ export const useStore = create(
       // Async Actions
       completeOnboarding: async (extraData = {}) => {
         const { language, theme, role, initData } = get();
+        // initData faqat Telegram WebApp ichida bo'ladi; brauzerda ochilsa — aniq xabar
+        if (!initData) {
+          alert("Ilovani faqat Telegram ichida oching (Web App).");
+          return false;
+        }
         try {
           const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/onboarding?init_data=${encodeURIComponent(initData)}`, {
             method: 'POST',
