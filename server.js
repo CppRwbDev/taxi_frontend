@@ -22,5 +22,5 @@ app.use((req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Frontend server runs on port \${PORT}`);
+  console.log(`🚀 Frontend server runs on port ${PORT}`);
 });

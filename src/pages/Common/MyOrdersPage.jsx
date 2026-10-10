@@ -2,15 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Clock, MapPin, CheckCircle, XCircle, Calendar } from 'lucide-react';
 import { useStore } from '../../store/useStore';
+import { readErrorMessage } from '../../utils/api';
 
 const MyOrdersPage = () => {
   const { initData, role } = useStore();
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchOrders();
+    // Holat o'zgarishi (takliflar, bekor qilinish, muddat o'tishi) uchun polling
+    const timer = setInterval(fetchOrders, 15000);
+    return () => clearInterval(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchOrders = async () => {
@@ -20,10 +26,14 @@ const MyOrdersPage = () => {
       });
       if (res.ok) {
         const data = await res.json();
-        setOrders(data);
+        setOrders(Array.isArray(data) ? data : (data.items || []));
+        setError(null);
+      } else {
+        setError(await readErrorMessage(res, "Buyurtmalarni yuklab bo'lmadi"));
       }
     } catch (err) {
       console.error(err);
+      setError("Server bilan aloqa yo'q");
     } finally {
       setLoading(false);
     }
@@ -44,12 +54,29 @@ const MyOrdersPage = () => {
       case 'searching': return 'Qidirilmoqda...';
       case 'has_offers': return 'Takliflar bor';
       case 'matched': return 'Kelishilgan';
+      case 'completed': return 'Yakunlangan';
       case 'cancelled': return 'Bekor qilingan';
       default: return status;
     }
   };
 
   if (loading) return <div className="flex justify-center p-10"><div className="animate-spin h-8 w-8 border-b-2 border-blue-500 rounded-full"></div></div>;
+
+  if (error) {
+    return (
+      <div className="p-6 space-y-4">
+        <header>
+          <h1 className="text-2xl font-bold">Buyurtmalarim</h1>
+        </header>
+        <div className="glass-card border-red-500/30 text-center py-8 text-sm text-red-500">
+          {error}
+        </div>
+        <button onClick={fetchOrders} className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold active:scale-95">
+          Qayta urinish
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6 pb-32">
@@ -99,6 +126,9 @@ const MyOrdersPage = () => {
               
               <div className="flex justify-between items-center text-sm opacity-80 pt-2">
                 <span>{order.passenger_count} yo'lovchi</span>
+                {!!order.refunded_offers && (
+                  <span className="text-[10px] text-yellow-500">{order.refunded_offers} ta taklif qaytarildi</span>
+                )}
                 <span className="text-[10px] opacity-40">{new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
               </div>
             </div>

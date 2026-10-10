@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Users, ClipboardList, TrendingUp, Shield, ShieldCheck, UserMinus, UserCheck, Edit2 } from 'lucide-react';
 import { useStore } from '../../store/useStore';
+import { readErrorMessage } from '../../utils/api';
 
 const AdminDashboard = () => {
   const { initData } = useStore();
@@ -12,6 +13,7 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState({ users_count: 0, orders_count: 0, total_revenue: 0 });
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [tab, setTab] = useState(queryTab);
 
   useEffect(() => {
@@ -27,8 +29,16 @@ const AdminDashboard = () => {
       
       if (statsRes.ok) setStats(await statsRes.json());
       if (usersRes.ok) setUsers(await usersRes.json());
+
+      if (!statsRes.ok || !usersRes.ok) {
+        const failing = !statsRes.ok ? statsRes : usersRes;
+        setError(await readErrorMessage(failing, "Ma'lumotlarni yuklab bo'lmadi"));
+      } else {
+        setError(null);
+      }
     } catch (err) {
       console.error(err);
+      setError("Server bilan aloqa yo'q");
     } finally {
       setLoading(false);
     }
@@ -36,6 +46,7 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleUpdateRole = async (userId, newRole) => {
@@ -45,7 +56,11 @@ const AdminDashboard = () => {
         headers: { 'Authorization': `tma_${initData}` }
       });
       if (res.ok) fetchData();
-    } catch (err) { alert("Xatolik!"); }
+      else alert("Rol o'zgartirib bo'lmadi: " + await readErrorMessage(res));
+    } catch (err) {
+      console.error(err);
+      alert("Xatolik!");
+    }
   };
 
   const handleUpdateStatus = async (userId, newStatus) => {
@@ -55,15 +70,18 @@ const AdminDashboard = () => {
         headers: { 'Authorization': `tma_${initData}` }
       });
       if (res.ok) fetchData();
-    } catch (err) { alert("Xatolik!"); }
+      else alert("Holat o'zgartirib bo'lmadi: " + await readErrorMessage(res));
+    } catch (err) {
+      console.error(err);
+      alert("Xatolik!");
+    }
   };
 
   if (loading) return <div className="p-10 text-center animate-pulse">Yuklanmoqda...</div>;
 
   return (
     <div className="p-6 space-y-6 pb-32 max-w-4xl mx-auto">
-      <header className="flex justify-between items-center">
-        <div>
+      <header className="flex justify-between items-center">        <div>
           <h1 className="text-2xl font-black bg-gradient-to-r from-purple-500 to-indigo-500 bg-clip-text text-transparent">
             Admin Panel
           </h1>
@@ -85,6 +103,10 @@ const AdminDashboard = () => {
         </div>
       </header>
 
+      {error && (
+        <div className="glass-card border-red-500/30 text-sm text-red-500 text-center py-4">{error}</div>
+      )}
+
       {tab === 'stats' ? (
         <div className="grid grid-cols-2 gap-4 animate-slide-up">
           <div className="glass-card p-6 flex flex-col items-center justify-center gap-3">
@@ -101,12 +123,27 @@ const AdminDashboard = () => {
             <div className="text-3xl font-black">{stats.orders_count}</div>
             <div className="text-[10px] opacity-50 uppercase font-black tracking-widest text-center">Buyurtmalar</div>
           </div>
+          <div className="glass-card p-6 flex flex-col items-center justify-center gap-3">
+            <div className="text-xl font-black">{stats.orders_active ?? 0}</div>
+            <div className="text-[10px] opacity-50 uppercase font-black tracking-widest text-center">Faol</div>
+          </div>
+          <div className="glass-card p-6 flex flex-col items-center justify-center gap-3">
+            <div className="text-xl font-black">{stats.orders_matched ?? 0}</div>
+            <div className="text-[10px] opacity-50 uppercase font-black tracking-widest text-center">Kelishilgan</div>
+          </div>
+          <div className="glass-card p-6 flex flex-col items-center justify-center gap-3">
+            <div className="text-xl font-black">{stats.orders_completed ?? 0}</div>
+            <div className="text-[10px] opacity-50 uppercase font-black tracking-widest text-center">Yakunlangan</div>
+          </div>
           <div className="glass-card p-8 flex flex-col items-center justify-center gap-3 col-span-2 bg-gradient-to-br from-indigo-600/10 to-purple-600/10 border-indigo-500/20">
             <div className="p-4 bg-purple-500/10 rounded-3xl">
                <TrendingUp className="w-10 h-10 text-purple-500" />
             </div>
-            <div className="text-2xl sm:text-4xl font-black text-center">{stats.total_revenue.toLocaleString()} <span className="text-xs opacity-50">UZS</span></div>
+            <div className="text-2xl sm:text-4xl font-black text-center">{(stats.total_revenue || 0).toLocaleString()} <span className="text-xs opacity-50">UZS</span></div>
             <div className="text-[10px] opacity-50 uppercase font-black tracking-widest text-center">Umumiy tushum (Jami komissiya)</div>
+            <div className="text-xs opacity-60">
+              Refund: {(stats.total_refunded || 0).toLocaleString()} UZS · Sof: {(stats.net_revenue || 0).toLocaleString()} UZS
+            </div>
           </div>
         </div>
       ) : (

@@ -1,30 +1,38 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { ClipboardList, Car, User, PlusCircle, Settings, TrendingUp, LayoutDashboard, Users } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { ClipboardList, Car, User, PlusCircle, Settings, TrendingUp, LayoutDashboard, Users, Wallet } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 
 const BottomNav = () => {
   const { role } = useStore();
+  const { t } = useTranslation();
   const location = useLocation();
 
   let navItems = [
-    { path: '/', label: 'Buyurtma', icon: PlusCircle },
-    { path: '/my-orders', label: 'Takliflar', icon: Car },
-    { path: '/profile', label: 'Profil', icon: User },
+    { path: '/', label: t('nav.book', 'Buyurtma'), icon: PlusCircle },
+    { path: '/my-orders', label: t('nav.myOrders', 'Buyurtmalarim'), icon: Car },
+    { path: '/profile', label: t('nav.profile', 'Profil'), icon: User },
   ];
 
   if (role === 'driver') {
     navItems = [
-      { path: '/', label: 'Yo\'lovchilar', icon: Car },
-      { path: '/my-offers', label: 'Buyurtmalar', icon: ClipboardList },
-      { path: '/profile', label: 'Profil', icon: User },
+      { path: '/', label: t('nav.drivers', "Yo'lovchilar"), icon: Car },
+      { path: '/my-offers', label: t('nav.myOffers', 'Takliflarim'), icon: ClipboardList },
+      { path: '/profile', label: t('nav.profile', 'Profil'), icon: User },
+    ];
+  } else if (role === 'investor') {
+    navItems = [
+      { path: '/wallet', label: t('nav.wallet', 'Hamyon'), icon: Wallet },
+      { path: '/profile', label: t('nav.profile', 'Profil'), icon: User },
+      { path: '/settings', label: t('nav.settings', 'Sozlamalar'), icon: Settings },
     ];
   } else if (role === 'admin') {
     navItems = [
-      { path: '/?tab=stats', label: 'Stats', icon: LayoutDashboard },
-      { path: '/?tab=users', label: 'A\'zolar', icon: Users },
-      { path: '/settings', label: 'Sozlamalar', icon: Settings },
-      { path: '/profile', label: 'Profil', icon: User },
+      { path: '/?tab=stats', label: t('nav.stats', 'Stats'), icon: LayoutDashboard },
+      { path: '/?tab=users', label: t('nav.members', "A'zolar"), icon: Users },
+      { path: '/settings', label: t('nav.settings', 'Sozlamalar'), icon: Settings },
+      { path: '/profile', label: t('nav.profile', 'Profil'), icon: User },
     ];
   }
 

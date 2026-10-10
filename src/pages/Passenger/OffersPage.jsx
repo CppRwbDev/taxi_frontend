@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Phone, CheckCircle, Clock, MapPin, User, Car } from 'lucide-react';
+import { Phone, CheckCircle, Clock, MapPin, User, Car, ClipboardList } from 'lucide-react';
 import { useStore } from '../../store/useStore';
+import { readErrorMessage } from '../../utils/api';
 
 const OffersPage = () => {
   const { orderId } = useParams();
@@ -12,13 +13,17 @@ const OffersPage = () => {
   const [order, setOrder] = useState(null);
   const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [acceptingOffer, setAcceptingOffer] = useState(null);
+
+  const matchedOffer = offers.find(o => o.status === 'accepted') || null;
 
   useEffect(() => {
     fetchOrderAndOffers();
     // Har 5 soniyada yangi takliflarni tekshirish (Polling)
     const interval = setInterval(fetchOrderAndOffers, 5000);
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderId]);
 
   const fetchOrderAndOffers = async () => {
@@ -30,10 +35,9 @@ const OffersPage = () => {
       if (orderRes.ok) {
         const orderData = await orderRes.json();
         setOrder(orderData);
-        // Agar buyurtma bekor qilingan bo'lsa yoki tugagan bo'lsa
-        if (orderData.status === 'matched') {
-            // navigate to success/matched page if necessary
-        }
+        setError(null);
+      } else {
+        setError(await readErrorMessage(orderRes, "Buyurtmani yuklab bo'lmadi"));
       }
 
       // 2. Takliflarni olish
@@ -46,6 +50,7 @@ const OffersPage = () => {
       }
     } catch (error) {
       console.error("Error fetching offers:", error);
+      setError("Server bilan aloqa yo'q");
     } finally {
       setLoading(false);
     }
@@ -61,13 +66,12 @@ const OffersPage = () => {
       
       if (res.ok) {
         const data = await res.json();
-        alert("Taklif qabul qilindi! Haydovchi telefon raqami: " + data.match.driver.phone_number);
+        alert("Taklif qabul qilindi! Haydovchi telefon raqami: " + (data.match?.driver?.phone_number || ''));
         navigate('/my-orders'); // Yo'lovchi o'z buyurtmalari ro'yxatiga qaytadi
       } else {
-        const err = await res.json();
-        alert("Xatolik: " + err.detail);
+        alert("Xatolik: " + await readErrorMessage(res));
       }
-    } catch (err) {
+    } catch {
       alert("Tizimda xatolik yuz berdi");
     } finally {
       setAcceptingOffer(null);
@@ -90,7 +94,34 @@ const OffersPage = () => {
         )}
       </header>
 
-      {offers.length === 0 ? (
+      {error && (
+        <div className="glass-card border-red-500/30 text-sm text-red-500 text-center py-4">{error}</div>
+      )}
+
+      {order?.status === 'matched' && (
+        <div className="glass-card border-green-500/30 space-y-4 py-6 text-center">
+          <CheckCircle className="w-12 h-12 mx-auto text-green-500" />
+          <div className="font-bold text-lg">Haydovchi bilan kelishildi!</div>
+          {matchedOffer ? (
+            <div className="space-y-1 text-sm opacity-80">
+              <div className="font-bold text-base">{matchedOffer.driver?.full_name || 'Haydovchi'}</div>
+              <div>{matchedOffer.driver?.phone_number}</div>
+              <div className="text-green-500 font-bold">{matchedOffer.proposed_price?.toLocaleString()} UZS</div>
+              <div className="opacity-60">Jo'nash vaqti: {matchedOffer.proposed_time}</div>
+            </div>
+          ) : (
+            <p className="text-sm opacity-70">Haydovchi ma'lumotlari yuklanmoqda...</p>
+          )}
+          <button
+            onClick={() => navigate('/my-orders')}
+            className="w-full btn-primary py-3 flex justify-center items-center gap-2"
+          >
+            <ClipboardList className="w-5 h-5" /> Buyurtmalarimga qaytish
+          </button>
+        </div>
+      )}
+
+      {order?.status !== 'matched' && offers.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 opacity-60">
           <div className="animate-pulse mb-4">
             <Clock className="w-12 h-12" />
@@ -98,7 +129,7 @@ const OffersPage = () => {
           <p>Haydovchilar qidirilmoqda...</p>
           <p className="text-xs mt-2 opacity-50">Sahifa avtomatik yangilanadi</p>
         </div>
-      ) : (
+      ) : order?.status !== 'matched' ? (
         <div className="space-y-4">
           {offers.map(offer => (
             <motion.div 
@@ -146,7 +177,7 @@ const OffersPage = () => {
             </motion.div>
           ))}
         </div>
-      )}
+      ) : null}
     </div>
   );
 };

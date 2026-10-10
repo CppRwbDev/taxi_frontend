@@ -9,7 +9,7 @@ import {
 
 const Onboarding = () => {
   const { t, i18n } = useTranslation();
-  const { setLanguage, setTheme, setRole, completeOnboarding, theme, role, user, setUser } = useStore();
+  const { setLanguage, setTheme, setRole, completeOnboarding, theme, role } = useStore();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [workingCities, setWorkingCities] = useState("");

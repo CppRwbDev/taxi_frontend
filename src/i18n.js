@@ -17,7 +17,19 @@ const resources = {
       "driver_desc": "Safarga chiqib daromad topish",
       "passenger": "Yo'lovchi",
       "passenger_desc": "Oson va tez manzilga yetib olish",
-      "next": "Davom etish"
+      "next": "Davom etish",
+      // Bottom nav
+      "nav.book": "Buyurtma",
+      "nav.myOrders": "Buyurtmalarim",
+      "nav.myOffers": "Takliflarim",
+      "nav.drivers": "Yo'lovchilar",
+      "nav.profile": "Profil",
+      "nav.wallet": "Hamyon",
+      "nav.stats": "Statistika",
+      "nav.members": "A'zolar",
+      "nav.settings": "Sozlamalar",
+      // Settings
+      "settings.title": "Sozlamalar"
     }
   },
   ru: {
@@ -32,7 +44,17 @@ const resources = {
       "driver_desc": "Зарабатывайте на поездках",
       "passenger": "Пассажир",
       "passenger_desc": "Быстро и удобно добраться",
-      "next": "Продолжить"
+      "next": "Продолжить",
+      "nav.book": "Заказ",
+      "nav.myOrders": "Мои заказы",
+      "nav.myOffers": "Мои предложения",
+      "nav.drivers": "Пассажиры",
+      "nav.profile": "Профиль",
+      "nav.wallet": "Кошелёк",
+      "nav.stats": "Статистика",
+      "nav.members": "Участники",
+      "nav.settings": "Настройки",
+      "settings.title": "Настройки"
     }
   }
 };

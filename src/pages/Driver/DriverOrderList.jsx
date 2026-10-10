@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useStore } from '../../store/useStore';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Users, Zap, RefreshCw, ChevronRight, Calendar, Clock } from 'lucide-react';
+import { readErrorMessage } from '../../utils/api';
 
 const DriverOrderList = () => {
   const { initData } = useStore();
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -17,10 +19,14 @@ const DriverOrderList = () => {
       });
       if (resp.ok) {
         const data = await resp.json();
-        setOrders(data);
+        setOrders(Array.isArray(data) ? data : (data.items || []));
+        setError(null);
+      } else {
+        setError(await readErrorMessage(resp, "Buyurtmalarni yuklab bo'lmadi"));
       }
     } catch (err) {
       console.error(err);
+      setError("Server bilan aloqa yo'q");
     } finally {
       setLoading(false);
     }
@@ -30,6 +36,7 @@ const DriverOrderList = () => {
     fetchOrders();
     const timer = setInterval(fetchOrders, 30000); // Har 30 sekundda yangilash
     return () => clearInterval(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -43,6 +50,10 @@ const DriverOrderList = () => {
           <RefreshCw className="w-5 h-5" />
         </button>
       </header>
+
+      {error && (
+        <div className="glass-card border-red-500/30 text-sm text-red-500 text-center py-4">{error}</div>
+      )}
 
       {orders.length === 0 ? (
         <div className="text-center py-20 opacity-50 space-y-4">

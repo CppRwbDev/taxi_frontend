@@ -1,17 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/useStore';
 import { 
   Languages, Moon, Sun, User as UserIcon, 
-  Car, Settings as SettingsIcon, ChevronLeft, LogOut,
-  Shield, Briefcase, ChevronRight, HelpCircle, Bell
+  Car, ChevronLeft, LogOut,
+  Briefcase, ChevronRight, HelpCircle, Bell
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Settings = () => {
   const { t, i18n } = useTranslation();
-  const { theme, language, role, user, setTheme, setLanguage, setRole, resetUser, syncUser } = useStore();
+  const { theme, language, role, setTheme, setLanguage, setRole, resetUser, syncUser } = useStore();
   const navigate = useNavigate();
+  const [notifications, setNotifications] = useState(
+    () => localStorage.getItem('notifications_enabled') !== '0'
+  );
 
   const handleLanguage = (lang) => {
     i18n.changeLanguage(lang);
@@ -28,6 +31,17 @@ const Settings = () => {
   const handleRole = (r) => {
     setRole(r);
     syncUser({ role: r });
+  };
+
+  const toggleNotifications = () => {
+    const next = !notifications;
+    setNotifications(next);
+    localStorage.setItem('notifications_enabled', next ? '1' : '0');
+  };
+
+  const openSupport = () => {
+    // Yordam — bot orqali (admin bilan bog'lanish)
+    window.open('https://t.me/tax_vodiylarAro_bot', '_blank');
   };
 
   return (
@@ -91,8 +105,7 @@ const Settings = () => {
             {[
               { id: 'passenger', label: 'Yo\'lovchi', icon: UserIcon },
               { id: 'driver', label: 'Haydovchi', icon: Car },
-              { id: 'investor', label: 'Investor', icon: Briefcase },
-              { id: 'admin', label: 'Admin', icon: Shield }
+              { id: 'investor', label: 'Investor', icon: Briefcase }
             ].map((r, index, arr) => (
               <button 
                 key={r.id}
@@ -114,15 +127,19 @@ const Settings = () => {
            <h2 className="text-[var(--tg-hint-color)] text-sm font-medium uppercase mb-3 px-2">Ilova</h2>
            <div className="glass-card overflow-hidden !p-0 shadow-lg">
               <button 
+                onClick={toggleNotifications}
                 className="w-full flex items-center justify-between p-4 border-b border-white/5 active:bg-white/5"
               >
                 <div className="flex items-center gap-3">
                   <Bell className="w-5 h-5 opacity-40" />
                   <span>Xabarnomalar</span>
                 </div>
-                <div className="px-2 py-0.5 bg-blue-500/10 text-blue-500 text-[10px] font-bold rounded">Yoqilgan</div>
+                <div className={`px-2 py-0.5 text-[10px] font-bold rounded ${notifications ? 'bg-blue-500/10 text-blue-500' : 'bg-white/5 opacity-50'}`}>
+                  {notifications ? 'Yoqilgan' : 'O\'chirilgan'}
+                </div>
               </button>
               <button 
+                onClick={openSupport}
                 className="w-full flex items-center justify-between p-4 active:bg-white/5"
               >
                 <div className="flex items-center gap-3">

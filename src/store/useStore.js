@@ -65,6 +65,7 @@ export const useStore = create(
             setUser(user);
             return true;
           }
+          console.error('Sync error:', response.status);
         } catch (error) {
           console.error('Sync error:', error);
         }
@@ -75,7 +76,16 @@ export const useStore = create(
       resetUser: () => set({ role: null, isOnboarded: false, user: null })
     }),
     {
-      name: 'taxi-storage', 
+      name: 'taxi-storage',
+      // initData faqat xotirada (session) qoladi — localStorage'ga yozilmaydi,
+      // aks holda eskirgan imzo keyingi ochilishda ham ishlatilardi.
+      partialize: (state) => ({
+        theme: state.theme,
+        language: state.language,
+        role: state.role,
+        isOnboarded: state.isOnboarded,
+        user: state.user,
+      }),
     }
   )
 )

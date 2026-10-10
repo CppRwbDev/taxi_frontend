@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { MapPin, Users, Send, Calendar, Clock } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 
@@ -11,7 +10,7 @@ const VILOYATLAR = [
 ];
 
 const BookingPage = () => {
-  const { role, initData } = useStore();
+  const { initData } = useStore();
   const navigate = useNavigate();
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');

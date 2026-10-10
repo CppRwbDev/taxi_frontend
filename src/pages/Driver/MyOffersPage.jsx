@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, MapPin, CheckCircle, XCircle, DollarSign } from 'lucide-react';
 import { useStore } from '../../store/useStore';
+import { readErrorMessage } from '../../utils/api';
 
 const MyOffersPage = () => {
   const { initData } = useStore();
   const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchOffers();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchOffers = async () => {
@@ -19,9 +22,13 @@ const MyOffersPage = () => {
       if (res.ok) {
         const data = await res.json();
         setOffers(data.items || []);
+        setError(null);
+      } else {
+        setError(await readErrorMessage(res, "Takliflarni yuklab bo'lmadi"));
       }
     } catch (err) {
       console.error(err);
+      setError("Server bilan aloqa yo'q");
     } finally {
       setLoading(false);
     }
@@ -41,11 +48,26 @@ const MyOffersPage = () => {
       case 'pending': return 'Kutilmoqda';
       case 'accepted': return 'Qabul qilingan';
       case 'rejected': return 'Rad etilgan';
+      case 'cancelled': return 'Bekor qilingan';
       default: return status;
     }
   };
 
   if (loading) return <div className="flex justify-center p-10"><div className="animate-spin h-8 w-8 border-b-2 border-blue-500 rounded-full"></div></div>;
+
+  if (error) {
+    return (
+      <div className="p-6 space-y-4">
+        <header>
+          <h1 className="text-2xl font-bold">Mening takliflarim</h1>
+        </header>
+        <div className="glass-card border-red-500/30 text-center py-8 text-sm text-red-500">{error}</div>
+        <button onClick={fetchOffers} className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold active:scale-95">
+          Qayta urinish
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6 pb-32">

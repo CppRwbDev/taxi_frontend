@@ -2,14 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { useStore } from '../../store/useStore';
 import { Wallet, ArrowUpCircle, History, Coins, ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { readErrorMessage } from '../../utils/api';
 
 const WalletPage = () => {
-  const { initData } = useStore();
+  const { initData, role } = useStore();
   const navigate = useNavigate();
   const [data, setData] = useState({ balance: 0, transactions: [] });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [topUpAmount, setTopUpAmount] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const isAdmin = role === 'admin';
 
   const fetchData = async () => {
     try {
@@ -19,9 +22,13 @@ const WalletPage = () => {
       if (res.ok) {
         const result = await res.json();
         setData(result);
+        setError(null);
+      } else {
+        setError(await readErrorMessage(res, "Balansni yuklab bo'lmadi"));
       }
     } catch (err) {
       console.error(err);
+      setError("Server bilan aloqa yo'q");
     } finally {
       setLoading(false);
     }
@@ -29,6 +36,7 @@ const WalletPage = () => {
 
   useEffect(() => {
     fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleTopUp = async () => {
@@ -53,8 +61,11 @@ const WalletPage = () => {
         alert("Balans to'ldirildi! (Demo)");
         setTopUpAmount('');
         fetchData();
+      } else {
+        alert(await readErrorMessage(res, "To'ldirib bo'lmadi"));
       }
     } catch (err) {
+      console.error(err);
       alert("Xatolik yuz berdi");
     } finally {
       setSubmitting(false);
@@ -76,6 +87,9 @@ const WalletPage = () => {
       </header>
 
       {/* BALANCE CARD */}
+      {error && (
+        <div className="glass-card border-red-500/30 text-sm text-red-500 text-center py-4">{error}</div>
+      )}
       <div className="bg-gradient-to-br from-blue-600 to-blue-400 p-6 rounded-3xl text-white shadow-xl shadow-blue-500/20 space-y-4">
         <div className="flex justify-between items-start">
           <div className="space-y-1">
@@ -86,7 +100,8 @@ const WalletPage = () => {
         </div>
       </div>
 
-      {/* TOP UP SECTION */}
+      {/* TOP UP SECTION — backendda faqat admin to'ldiradi */}
+      {isAdmin ? (
       <section className="space-y-4">
         <label className="text-sm font-bold opacity-70 flex items-center gap-2 ml-2">
           <ArrowUpCircle className="w-4 h-4 text-green-500" /> Balansni to'ldirish (Demo)
@@ -119,6 +134,16 @@ const WalletPage = () => {
           ))}
         </div>
       </section>
+      ) : (
+        <section className="space-y-2">
+          <label className="text-sm font-bold opacity-70 flex items-center gap-2 ml-2">
+            <ArrowUpCircle className="w-4 h-4 text-yellow-500" /> Balansni to'ldirish
+          </label>
+          <div className="glass-card text-sm opacity-70">
+            Balansni to'ldirish uchun administratorga murojaat qiling.
+          </div>
+        </section>
+      )}
 
       {/* TRANSACTION HISTORY */}
       <section className="space-y-4">

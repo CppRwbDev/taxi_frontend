@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { User, Phone, Car, Save, Wallet, ChevronRight, Briefcase, MapPin, ShieldCheck } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 import { useNavigate } from 'react-router-dom';
+import { readErrorMessage } from '../../utils/api';
 
 const VILOYATLAR = [
   "Toshkent", "Andijon", "Buxoro", "Farg'ona", "Jizzax", 
@@ -10,7 +11,7 @@ const VILOYATLAR = [
 ];
 
 const ProfilePage = () => {
-  const { user, initData, setUser, role } = useStore();
+  const { user, initData, setUser, role, resetUser } = useStore();
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
@@ -70,7 +71,7 @@ const ProfilePage = () => {
         setUser(updatedUser);
         alert("Profil muvaffaqiyatli saqlandi!");
       } else {
-        alert("Saqlashda xatolik yuz berdi.");
+        alert("Saqlashda xatolik: " + await readErrorMessage(res));
       }
     } catch (err) {
       console.error(err);
@@ -96,7 +97,7 @@ const ProfilePage = () => {
              {user?.username && <span className="text-xs opacity-50 font-bold">@{user.username}</span>}
              <div className="flex items-center gap-1 text-xs opacity-70 capitalize mt-1 text-blue-500 font-black">
                 <Briefcase className="w-3 h-3" />
-                {role === 'driver' ? 'Haydovchi' : 'Yo\'lovchi'}
+                {role === 'driver' ? 'Haydovchi' : role === 'investor' ? 'Investor' : 'Yo\'lovchi'}
              </div>
           </div>
         </div>

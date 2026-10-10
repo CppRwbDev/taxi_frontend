@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MapPin, Users, Send, DollarSign, Clock } from 'lucide-react';
 import { useStore } from '../../store/useStore';
+import { readErrorMessage } from '../../utils/api';
 
 const DriverOfferPage = () => {
   const { orderId } = useParams();
   const navigate = useNavigate();
-  const { initData, user } = useStore();
+  const { initData } = useStore();
   
   const [order, setOrder] = useState(null);
   const [price, setPrice] = useState('');
@@ -16,6 +17,7 @@ const DriverOfferPage = () => {
 
   useEffect(() => {
     fetchOrderDetails();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderId]);
 
   const fetchOrderDetails = async () => {
@@ -27,7 +29,7 @@ const DriverOfferPage = () => {
         const data = await res.json();
         setOrder(data);
       } else {
-        alert("Buyurtmani yuklashda xatolik yuz berdi");
+        alert(await readErrorMessage(res, "Buyurtmani yuklashda xatolik yuz berdi"));
       }
     } catch (err) {
       console.error(err);
@@ -60,16 +62,22 @@ const DriverOfferPage = () => {
       
       if (res.ok) {
         alert("Taklifingiz muvaffaqiyatli yuborildi!");
-        window.Telegram?.WebApp?.close(); // Yoki navigate('/my-offers')
+        // Mini App'ni yopmaymiz — haydovchi takliflar tarixini ko'ra olsin
+        navigate('/my-offers');
+      } else if (res.status === 402) {
+        const err = await res.json().catch(() => null);
+        const required = err?.required ? Number(err.required).toLocaleString() : null;
+        const current = err?.current_balance ? Number(err.current_balance).toLocaleString() : null;
+        const msg = [
+          required ? `Kerak: ${required} UZS` : null,
+          current ? `Balansingiz: ${current} UZS` : null,
+        ].filter(Boolean).join(' • ');
+        alert("Hisobingizda mablag' yetarli emas." + (msg ? "\n" + msg : "") + "\nBalansni to'ldirish uchun administratorga murojaat qiling.");
+        navigate('/wallet');
       } else {
-        const err = await res.json();
-        if (res.status === 402) {
-           alert("Hisobingizda mablag' yetarli emas. " + err.detail);
-        } else {
-           alert("Xatolik: " + err.detail);
-        }
+        alert("Xatolik: " + await readErrorMessage(res));
       }
-    } catch (err) {
+    } catch {
       alert("Tizimda xatolik");
     } finally {
       setSubmitting(false);
